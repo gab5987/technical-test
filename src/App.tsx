@@ -1,4 +1,9 @@
 import React from 'react';
+import {
+  Navbar,
+  calculateValuesIfSellerDoesNotOwnProperty,
+  calculateValuesIfSellerOwnsProperty,
+} from './Functions';
 
 class App extends React.Component
 <{}, {
@@ -8,6 +13,15 @@ class App extends React.Component
     propertyShare: number | undefined,
     propertyShareAlienated: number | undefined,
   },
+  isFlat: boolean,
+  isNonResidentialPremisses: boolean,
+  propertyLandPlot: number,
+  isHouse: boolean,
+  isNonResidentialBuilding: boolean | string
+
+  propertyCadastralValue: number | undefined,
+  propertyBeingSoldValue: number | undefined,
+  areRelatives: boolean,
 }>
 {
   constructor(props: any) {
@@ -19,6 +33,15 @@ class App extends React.Component
         propertyShare: undefined,
         propertyShareAlienated: undefined,
       },
+      isFlat: false,
+      isNonResidentialPremisses: false,
+      propertyLandPlot: 0,
+      isHouse: false,
+      isNonResidentialBuilding: false,
+
+      propertyCadastralValue: undefined,
+      propertyBeingSoldValue: undefined,
+      areRelatives: false,
     };
   }
 
@@ -39,7 +62,75 @@ class App extends React.Component
 
   SellerOwnsProperty() {
     return(
-      <p>uyggf</p>
+      <>
+        <h3>2 - What is the type of the property?</h3>
+        <div style={{maxWidth: "fit-content"}}>
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+            onChange={() => this.setState({ isFlat: !this.state.isFlat }) }/>
+            <label className="form-check-label">
+              Flat
+            </label>
+          </div>
+
+          <a style={{padding: "5px"}} />
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+            onChange={() => this.setState({ isNonResidentialPremisses: !this.state.isNonResidentialPremisses }) }/>
+            <label className="form-check-label">
+              Non-Residential Premises
+            </label>
+          </div>
+
+          <label> Quantity of Land Plots</label>
+          <select className="form-select" aria-label="Default select example"
+          onChange={(event) => this.setState({ propertyLandPlot: Number(event.target.value) }) }>
+            <option value="0" selected>0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+
+          <a style={{padding: "5px"}} />
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+            onChange={() => this.setState({ isHouse: !this.state.isHouse }) }/>
+            <label className="form-check-label">
+              House
+            </label>
+          </div>
+
+          <a style={{padding: "5px"}} />
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" 
+            onChange={() => this.setState({ isNonResidentialBuilding: !this.state.isNonResidentialBuilding }) }/>
+            <label className="form-check-label">
+              Non-Residential Building
+            </label>
+          </div>
+        </div>
+        <br />
+
+        <div style={{maxWidth: "fit-content"}}>
+        <label> Indicate the cadastral value of the property (if a share is being alienated from the whole object, then indicate its value): </label>
+            <input type="number" className="form-control" value={this.state.propertyCadastralValue} placeholder="Enter the cadastral value of the property"
+            onChange={(event) => this.setState({ propertyCadastralValue: Number(event.target.value) })}></input> <br />
+        
+        <a style={{padding: "5px"}} />
+        <label> Indicate the value of the property for which it is being sold (if a share is being alienated from the whole object, then indicate its value): </label>
+            <input type="number" className="form-control" value={this.state.propertyBeingSoldValue} placeholder="Enter the cadastral value of the property which is being sold"
+            onChange={(event) => this.setState({ propertyBeingSoldValue: Number(event.target.value) })}></input> <br />
+
+        <label> Are the parties of the contract relatives? </label>
+          <select className="form-select" aria-label="Default select example"
+            onChange={(event) => this.setState({ areRelatives: event.target.value === 'true' ? true : false }) }>
+              <option value="false" selected>NO</option>
+              <option value="true">YES</option>
+            </select>
+        </div>
+        <br />
+        <button type="button" className="btn btn-primary btn-bg" onClick={() => calculateValuesIfSellerOwnsProperty(this.state)} >Calculate</button> <a style={{padding: "5px"}} />
+      </>
     )
   }
   SellerDoesNotOwnProperty() {
@@ -89,7 +180,7 @@ class App extends React.Component
     )
   }
 
-  render(): JSX.Element {
+  render(): JSX.Element { console.log(this.state)
     return (
       <>
         <Navbar />
@@ -112,51 +203,3 @@ class App extends React.Component
 }
 
 export default App;
-
-async function calculateValuesIfSellerDoesNotOwnProperty(props: any) {
-
-  const calculateValue = async (value: number) => {
-    let result: number = (value / 100) * 0.5 ;
-    result < 300 ? result = 300 : result = result; // minimum value is 3000
-    result > 20000 ? result = 20000 : result = result; // maximum value is 20000
-
-    result += 6400; // 6400 is the value of some tax maybe? I don't know
-    alert(`The value of the property is: ${result}`);
-  }
-
-  if(props.propertyShareAlienated === undefined) {
-    calculateValue(props.propertyShare);
-    return false;
-  }
-
-  props.propertyShareAlienated > props.propertyShare ? calculateValue(props.propertyShareAlienated) : calculateValue(props.propertyShare);
-  return false;
-}
-
-const Navbar = () => {
-  return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container-fluid">
-          <a className="navbar-brand">Created by Gabriel Novalski</a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse" id="navbarNav">
-              <ul className="navbar-nav">
-                  <li className="nav-item dropdown">
-                    <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      See More
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li><a className="dropdown-item" href="https://github.com/gab5987" target="_blank">Gabriel's github page</a></li>
-                      <li><a className="dropdown-item" href="https://gabrielnovalski.tech" target="_blank">Gabriel's portfolio</a></li>
-                      <li><a className="dropdown-item" href="https://github.com/gab5987/technical-test" target="_blank">Source Code</a></li>
-                    </ul>
-                  </li>
-              </ul>
-          </div>
-      </div>
-  </nav>
-  );
-}
