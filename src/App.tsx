@@ -22,6 +22,8 @@ class App extends React.Component
   propertyCadastralValue: number | undefined,
   propertyBeingSoldValue: number | undefined,
   areRelatives: boolean,
+  isBuyerMarried: boolean,
+  isSellerMarried: boolean,
 }>
 {
   constructor(props: any) {
@@ -42,11 +44,10 @@ class App extends React.Component
       propertyCadastralValue: undefined,
       propertyBeingSoldValue: undefined,
       areRelatives: false,
-    };
-  }
 
-  componentDidMount(): void {
-    const url = new URLSearchParams(window.location.search);
+      isBuyerMarried: false,
+      isSellerMarried: false,
+    };
   }
 
   askIfSellerOwnsProperty() {
@@ -57,6 +58,30 @@ class App extends React.Component
         <button type="button" className="btn btn-primary btn-bg" onClick={() => this.setState({ sellerOwnsProperty: true })}>Yes</button> <a style={{padding: "5px"}} />
         <button type="button" className="btn btn-danger btn-bg" onClick={() => this.setState({ sellerOwnsProperty: false })}>No</button>
       </div>
+    )
+  }
+
+  aditionalFields() {
+    return(
+      <>
+        <a style={{padding: "5px"}} />
+        <div className="form-check">
+          <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+          onChange={() => this.setState({ isBuyerMarried: !this.state.isBuyerMarried }) }/>
+          <label className="form-check-label">
+            Is the BUYER Married?
+          </label>
+        </div>
+
+        <a style={{padding: "5px"}} />
+        <div className="form-check">
+          <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+          onChange={() => this.setState({ isSellerMarried: !this.state.isSellerMarried }) }/>
+          <label className="form-check-label">
+            Donor/seller acquired property on a reimbursable basis while married
+          </label>
+        </div>
+      </>
     )
   }
 
@@ -129,6 +154,11 @@ class App extends React.Component
             </select>
         </div>
         <br />
+
+        <h4>Aditional Fields:</h4>
+        { this.aditionalFields() }
+        <br />
+
         <button type="button" className="btn btn-primary btn-bg" onClick={() => calculateValuesIfSellerOwnsProperty(this.state)} >Calculate</button> <a style={{padding: "5px"}} />
       </>
     )
@@ -168,11 +198,17 @@ class App extends React.Component
           </div>
         )
       }
+
+      <br />
+      <h4>Aditional Fields:</h4>
+        { this.aditionalFields() }
+      <br />
+
       {
         this.state.caseDoesentOwnProperty.propertyShare && (
           <>
             <br />
-            <button type="button" className="btn btn-outline-info btn-bg" onClick={() => calculateValuesIfSellerDoesNotOwnProperty(this.state.caseDoesentOwnProperty) } >Calculate</button>
+            <button type="button" className="btn btn-outline-info btn-bg" onClick={() => calculateValuesIfSellerDoesNotOwnProperty(this.state.caseDoesentOwnProperty, this.state.isBuyerMarried, this.state.isSellerMarried) } >Calculate</button>
           </>
         )
       }

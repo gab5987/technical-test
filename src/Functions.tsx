@@ -1,12 +1,25 @@
-export async function calculateValuesIfSellerDoesNotOwnProperty(props: any) {
+export async function calculateValuesIfSellerDoesNotOwnProperty(props: any, isBuyerMarried: boolean, isSellerMarried: boolean) {
 
     const calculateValue = async (value: number) => {
       let result: number = (value / 100) * 0.5 ;
       result < 300 ? result = 300 : result = result; // minimum value is 3000
       result > 20000 ? result = 20000 : result = result; // maximum value is 20000
   
-      result += 6400; // 6400 is the value of some tax maybe? I don't know
-      alert(`The value of the property is: ${result}`);
+      result += 6400 + 2600 + 540 + 2000;
+      if(isBuyerMarried) result += 2000;
+      if(isSellerMarried) result += 2000;
+
+      alert(
+        `The value of the property is: ${result.toFixed(2)} rubles\n
+        Resume:
+        ${isBuyerMarried ? "+ 2000 cost of consent buyer" : "no cost of consent - buyer"}
+        ${isSellerMarried ? "+ 2000 cost of consent seller" : "no cost of consent - seller"}
+        +2600 settlement through a notary's deposit account.
+        +540 cost of certifying the extracts from the USRN.
+        Notary services - free of charge.
+        +2000 state duty to Rosreestr.
+        `
+      );
     }
   
     if(props.propertyShareAlienated === undefined) {
@@ -18,11 +31,6 @@ export async function calculateValuesIfSellerDoesNotOwnProperty(props: any) {
     return false;
   }
 
-
-//         + props.isNonResidentialPremisses ? 1 : 0
-//         + props.isFlat ? 1 : 0
-//         + props.isHouse ? 1 : 0
-
   export const calculateValuesIfSellerOwnsProperty = async (props: any) => {
       
     let totalItens: number = (
@@ -31,7 +39,9 @@ export async function calculateValuesIfSellerDoesNotOwnProperty(props: any) {
         Number(props.isNonResidentialPremisses) +
         Number(props.isFlat) +
         Number(props.isHouse)
-    ) 
+    )
+    const totalItensForAditionalValues: number = totalItens;
+
     if(totalItens > 3){
         totalItens -= 3;
         totalItens *= 1000;
@@ -44,9 +54,6 @@ export async function calculateValuesIfSellerDoesNotOwnProperty(props: any) {
         }
         else return 3000 + ((transactionAmount / 100) * 0.2) + 5000 + totalItens;
     }
-
-// - if the transaction amount is more than 10,000,000 rubles, then (25,000 rubles + 0.1% of the transaction amount exceeding 10,000,000 rubles, but if the type of property is chosen - an apartment or a residential building, then the tariff is not more than 100,000 rubles) + 6,000 rubles. (if there are more than 3 objects, then starting from the third, 1,000 rubles are added, but not more than 10,000 rubles)
-
 
     function calculateValuesIfNotRelatives(transactionAmount: number): number {
         if(transactionAmount <= 1000000) {
@@ -66,15 +73,47 @@ export async function calculateValuesIfSellerDoesNotOwnProperty(props: any) {
     }
 
     if(props.areRelatives) {
-        const cadastralValue = calculateValuesIfRealatives(props.propertyCadastralValue).toFixed(2);
-        const beingSoldValue = calculateValuesIfRealatives(props.propertyBeingSoldValue).toFixed(2);
+        let aditionals: number = 0;
 
-        alert(`the cadastral value is ${cadastralValue}, and the value of the property being sold is ${beingSoldValue}`)
+        if(props.isBuyerMarried) aditionals += 2000;
+        if(props.isSellerMarried) aditionals += 2000;
+        aditionals += 2600 + 540*totalItensForAditionalValues + 2000*totalItensForAditionalValues;
+
+        const cadastralValue = Number(calculateValuesIfRealatives(props.propertyCadastralValue).toFixed(2) + aditionals);
+        const beingSoldValue = Number(calculateValuesIfRealatives(props.propertyBeingSoldValue).toFixed(2) + aditionals);
+
+        alert(
+          `The cadastral value is ${cadastralValue.toFixed(2)}, and the value of the property being sold is ${beingSoldValue.toFixed(2)}\n
+          Resume:
+          ${props.isBuyerMarried ? "+ 2000 cost of consent buyer" : "no cost of consent - buyer"}
+          ${props.isSellerMarried ? "+ 2000 cost of consent seller" : "no cost of consent - seller"}
+          +2600 settlement through a notary's deposit account.
+          +${540*totalItensForAditionalValues} cost of certifying the extracts from the USRN.
+          Notary services - free of charge.
+          +${2000*totalItensForAditionalValues} state duty to Rosreestr.
+          `
+        );
     } else {
-        const cadastralValue = calculateValuesIfRealatives(props.propertyCadastralValue).toFixed(2);
-        const beingSoldValue = calculateValuesIfRealatives(props.propertyBeingSoldValue).toFixed(2);
+        let aditionals: number = 0;
 
-        alert(`the cadastral value is ${cadastralValue}, and the value of the property being sold is ${beingSoldValue}`)
+        if(props.isBuyerMarried) aditionals += 2000;
+        if(props.isSellerMarried) aditionals += 2000;
+        aditionals += 2600 + 540*totalItensForAditionalValues + 2000*totalItensForAditionalValues;
+
+        const cadastralValue = calculateValuesIfNotRelatives(props.propertyCadastralValue) + aditionals;
+        const beingSoldValue = calculateValuesIfNotRelatives(props.propertyBeingSoldValue) + aditionals;
+
+        alert(
+          `The cadastral value is ${cadastralValue.toFixed(2)}, and the value of the property being sold is ${beingSoldValue.toFixed(2)}\n
+          Resume:
+          ${props.isBuyerMarried ? "+ 2000 cost of consent buyer" : "no cost of consent - buyer"}
+          ${props.isSellerMarried ? "+ 2000 cost of consent seller" : "no cost of consent - seller"}
+          +2600 settlement through a notary's deposit account.
+          +${540*totalItensForAditionalValues} cost of certifying the extracts from the USRN.
+          Notary services - free of charge.
+          +${2000*totalItensForAditionalValues} state duty to Rosreestr.
+          `
+        );
     }
 }
   
