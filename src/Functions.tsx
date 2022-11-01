@@ -66,13 +66,13 @@ export async function calculateValuesIfSellerDoesNotOwnProperty(props: any) {
     }
 
     if(props.areRelatives) {
-        const cadastralValue = calculateValuesIfRealatives(props.propertyCadastralValue);
-        const beingSoldValue = calculateValuesIfRealatives(props.propertyBeingSoldValue);
+        const cadastralValue = calculateValuesIfRealatives(props.propertyCadastralValue).toFixed(2);
+        const beingSoldValue = calculateValuesIfRealatives(props.propertyBeingSoldValue).toFixed(2);
 
         alert(`the cadastral value is ${cadastralValue}, and the value of the property being sold is ${beingSoldValue}`)
     } else {
-        const cadastralValue = calculateValuesIfRealatives(props.propertyCadastralValue);
-        const beingSoldValue = calculateValuesIfRealatives(props.propertyBeingSoldValue);
+        const cadastralValue = calculateValuesIfRealatives(props.propertyCadastralValue).toFixed(2);
+        const beingSoldValue = calculateValuesIfRealatives(props.propertyBeingSoldValue).toFixed(2);
 
         alert(`the cadastral value is ${cadastralValue}, and the value of the property being sold is ${beingSoldValue}`)
     }
