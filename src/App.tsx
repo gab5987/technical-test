@@ -180,7 +180,7 @@ class App extends React.Component
     )
   }
 
-  render(): JSX.Element { console.log(this.state)
+  render(): JSX.Element {
     return (
       <>
         <Navbar />
